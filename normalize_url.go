@@ -7,7 +7,7 @@ import (
 )
 
 var ErrorEmptyURL = errors.New("URL is Empty, please provide a URL")
-var ErrorEmptyHost = errors.New("please provide a correct URL")
+var ErrorInvalidURL = errors.New("please provide a correct URL")
 
 func normalizeURL(URL string) (string, error){
 	if URL == ""{
@@ -15,10 +15,11 @@ func normalizeURL(URL string) (string, error){
 	}
 	parsedURL, err := url.Parse(URL)
 	if err != nil {
-		return "", err
+		return "", ErrorInvalidURL
 	}
 	trimmedPath := strings.TrimSuffix(parsedURL.Path, "/")
 	normalizedURL := parsedURL.Host + trimmedPath
+	normalizedURL = strings.ToLower(normalizedURL)
 
 	return normalizedURL, nil
 }
