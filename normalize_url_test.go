@@ -31,3 +31,4 @@ func TestNormalizeURL(t *testing.T){
 		})
 	}
 }
+
