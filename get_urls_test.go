@@ -7,14 +7,14 @@ import (
 	"testing"
 )
 
-func TestGetURLsFromHTML(t *testing.T){
-	tests := map[string]struct{
-		inputURL		string
-		inputBody		string
-		expectedURLs	[]string
-		errorContains 	string	
+func TestGetURLsFromHTML(t *testing.T) {
+	tests := map[string]struct {
+		inputURL      string
+		inputBody     string
+		expectedURLs  []string
+		errorContains string
 	}{
-		"absolute and relative URLs" : {
+		"absolute and relative URLs": {
 			inputURL: "https://blog.boot.dev",
 			inputBody: `
 				<html>
@@ -43,7 +43,7 @@ func TestGetURLsFromHTML(t *testing.T){
 				`,
 			expectedURLs: []string{"https://blog.boot.dev/path/one"},
 		},
-		"absolute URL" :{
+		"absolute URL": {
 			inputURL: "https://blog.boot.dev",
 			inputBody: `
 				<html>
@@ -56,7 +56,7 @@ func TestGetURLsFromHTML(t *testing.T){
 				`,
 			expectedURLs: []string{"https://blog.boot.dev"},
 		},
-		"no href":{
+		"no href": {
 			inputURL: "https://blog.boot.dev",
 			inputBody: `
 				<html>
@@ -69,7 +69,7 @@ func TestGetURLsFromHTML(t *testing.T){
 				`,
 			expectedURLs: nil,
 		},
-		"bad HTML":{
+		"bad HTML": {
 			inputURL: "https://blog.boot.dev",
 			inputBody: `
 				<html body>
@@ -80,7 +80,7 @@ func TestGetURLsFromHTML(t *testing.T){
 				`,
 			expectedURLs: []string{"https://blog.boot.dev/path/one"},
 		},
-		"Invalid href URl":{
+		"Invalid href URl": {
 			inputURL: "https://blog.boot.dev",
 			inputBody: `
 				<html>
@@ -93,7 +93,7 @@ func TestGetURLsFromHTML(t *testing.T){
 				`,
 			expectedURLs: nil,
 		},
-		"handle invalid base URL":{
+		"handle invalid base URL": {
 			inputURL: `:\\invalidBaseURL`,
 			inputBody: `
 				<html>
@@ -104,31 +104,31 @@ func TestGetURLsFromHTML(t *testing.T){
 					</body>
 				</html>
 				`,
-			expectedURLs:      nil,
+			expectedURLs:  nil,
 			errorContains: "couldn't parse base URL",
 		},
 	}
 
-	for name, tc := range tests{
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			baseURL, err := url.Parse(tc.inputURL)
-			if err != nil && !strings.Contains(err.Error(), tc.errorContains){
+			if err != nil && !strings.Contains(err.Error(), tc.errorContains) {
 				t.Errorf("Test '%s' FAIL: couldn't parse input URL: %v", name, err)
 				return
 			}
 
 			urls, err := getURLsFromHTML(tc.inputBody, baseURL)
-			if err != nil  && !strings.Contains(err.Error(), tc.errorContains){
+			if err != nil && !strings.Contains(err.Error(), tc.errorContains) {
 				t.Errorf("Test: %s FAIL unexpected error: %v", name, err)
 				return
-			}else if err != nil && tc.errorContains == ""{
+			} else if err != nil && tc.errorContains == "" {
 				t.Errorf("Test %v FAIL: unexpected error: %v", name, err)
 				return
-			}else if err == nil && tc.errorContains != ""{
+			} else if err == nil && tc.errorContains != "" {
 				t.Errorf("Test %v FAIL: expected error containing '%v', got none.", name, tc.errorContains)
 				return
 			}
-			if !reflect.DeepEqual(urls, tc.expectedURLs){
+			if !reflect.DeepEqual(urls, tc.expectedURLs) {
 				t.Errorf("Test: %s FAIL expected urls: %v, got: %v", name, tc.expectedURLs, urls)
 				return
 			}

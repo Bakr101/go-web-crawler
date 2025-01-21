@@ -8,14 +8,14 @@ import (
 	"golang.org/x/net/html"
 )
 
-func getURLsFromHTML(htmlBody string, baseURL *url.URL) ([]string, error){
-	
+func getURLsFromHTML(htmlBody string, baseURL *url.URL) ([]string, error) {
+
 	bodyReader := strings.NewReader(htmlBody)
 	parsedBody, err := html.Parse(bodyReader)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	var urls []string
 	var traverseNodes func(*html.Node)
 	traverseNodes = func(node *html.Node) {
@@ -42,4 +42,3 @@ func getURLsFromHTML(htmlBody string, baseURL *url.URL) ([]string, error){
 
 	return urls, nil
 }
-

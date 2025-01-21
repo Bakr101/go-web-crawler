@@ -9,8 +9,8 @@ import (
 var ErrorEmptyURL = errors.New("URL is Empty, please provide a URL")
 var ErrorInvalidURL = errors.New("please provide a correct URL")
 
-func normalizeURL(URL string) (string, error){
-	if URL == ""{
+func normalizeURL(URL string) (string, error) {
+	if URL == "" {
 		return "", ErrorEmptyURL
 	}
 	parsedURL, err := url.Parse(URL)
