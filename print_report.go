@@ -5,7 +5,7 @@ import (
 	"sort"
 )
 
-func printReport(pages map[string]int, baseURL string){
+func printReport(pages map[string]int, baseURL string) {
 	pagesSlice := sortPages(pages)
 	fmt.Println("=============================")
 	fmt.Printf("REPORT for %s\n", baseURL)
@@ -16,13 +16,15 @@ func printReport(pages map[string]int, baseURL string){
 	}
 	fmt.Println("=============================")
 }
+
 type page struct {
-	url string
+	url   string
 	count int
 }
-func sortPages(pages map[string]int) []page{
+
+func sortPages(pages map[string]int) []page {
 	pagesSlice := []page{}
-	for k,v := range pages{
+	for k, v := range pages {
 		pagesSlice = append(pagesSlice, page{url: k, count: v})
 	}
 	sort.Slice(pagesSlice, func(i, j int) bool {

@@ -26,84 +26,44 @@ func main() {
 	// 	fmt.Println(err)
 	// 	os.Exit(1)
 	// }
-	
-	if len(commands) == 3 {
-		parsedBaseURL, err := url.Parse(commands[0])
-		if err != nil {
-			fmt.Printf("Error - crawlPage: couldn't parse URL '%s': %v\n", commands[0], err)
-			return
-		}
-		maxConcurrency, err := strconv.Atoi(commands[1])
+
+	parsedBaseURL, err := url.Parse(commands[0])
+	if err != nil {
+		fmt.Printf("Error - crawlPage: couldn't parse URL '%s': %v\n", commands[0], err)
+		return
+	}
+
+	maxConcurrency := 5
+	maxPages := 10
+
+	if len(commands) >= 2 {
+		maxConcurrency, err = strconv.Atoi(commands[1])
 		if err != nil {
 			fmt.Printf("Error: couldn't parse concurrency value: %v\n", err)
 			return
 		}
-		maxPages, err := strconv.Atoi(commands[2])
+	}
+
+	if len(commands) == 3 {
+		maxPages, err = strconv.Atoi(commands[2])
 		if err != nil {
 			fmt.Printf("Error: couldn't parse max pages value: %v\n", err)
 			return
 		}
-		
-		cfg := Config{
-			pages:              map[string]int{},
-			baseURL:            parsedBaseURL,
-			mu:                 &sync.Mutex{},
-			concurrencyControl: make(chan struct{}, maxConcurrency),
-			wg:                 &sync.WaitGroup{},
-			maxPages:           maxPages,
-		}
-		cfg.wg.Add(1)
-		go cfg.crawlPage(commands[0])
-		cfg.wg.Wait()
-
-		
-		printReport(cfg.pages, commands[0])
 	}
-	if len(commands) == 1 {
-		parsedBaseURL, err := url.Parse(commands[0])
-		if err != nil {
-			fmt.Printf("Error - crawlPage: couldn't parse URL '%s': %v\n", commands[0], err)
-			return
-		}
-		cfg := Config{
-			pages:              map[string]int{},
-			baseURL:            parsedBaseURL,
-			mu:                 &sync.Mutex{},
-			concurrencyControl: make(chan struct{}, 5),
-			wg:                 &sync.WaitGroup{},
-			maxPages:           10,
-		}
-		cfg.wg.Add(1)
-		go cfg.crawlPage(commands[0])
-		cfg.wg.Wait()
 
-		
-		printReport(cfg.pages, commands[0])
+	cfg := Config{
+		pages:              map[string]int{},
+		baseURL:            parsedBaseURL,
+		mu:                 &sync.Mutex{},
+		concurrencyControl: make(chan struct{}, maxConcurrency),
+		wg:                 &sync.WaitGroup{},
+		maxPages:           maxPages,
 	}
-	if len(commands) == 2 {
-		parsedBaseURL, err := url.Parse(commands[0])
-		if err != nil {
-			fmt.Printf("Error - crawlPage: couldn't parse URL '%s': %v\n", commands[0], err)
-			return
-		}
-		maxConcurrency, err := strconv.Atoi(commands[1])
-		if err != nil {
-			fmt.Printf("Error: couldn't parse concurrency value: %v\n", err)
-			return
-		}
-		cfg := Config{
-			pages:              map[string]int{},
-			baseURL:            parsedBaseURL,
-			mu:                 &sync.Mutex{},
-			concurrencyControl: make(chan struct{}, maxConcurrency),
-			wg:                 &sync.WaitGroup{},
-			maxPages:           10,
-		}
-		cfg.wg.Add(1)
-		go cfg.crawlPage(commands[0])
-		cfg.wg.Wait()
+	cfg.wg.Add(1)
+	go cfg.crawlPage(commands[0])
+	cfg.wg.Wait()
 
-		printReport(cfg.pages, commands[0])
-	}
+	printReport(cfg.pages, commands[0])
 
 }
